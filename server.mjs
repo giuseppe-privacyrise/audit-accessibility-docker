@@ -18,9 +18,9 @@ app.post('/scan', async (req, res) => {
   console.log(`📥 Received scan request for: ${url}`);
 
   try {
-    console.log('🚀 Launching Lighthouse scan...');
+    console.log('🚀 Launching Lighthouse scan via npx...');
     const { stdout, stderr } = await execAsync(
-      `lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless --no-sandbox --disable-gpu --disable-dev-shm-usage"`
+      `npx lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless --no-sandbox --disable-gpu --disable-dev-shm-usage"`
     );
 
     console.log('✅ Lighthouse scan completed');
