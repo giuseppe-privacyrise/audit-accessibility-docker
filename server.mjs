@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import lighthouse from 'lighthouse';
-import chromeLauncher from 'chrome-launcher';
+import { launch } from 'chrome-launcher';
 
 const app = express();
 app.use(cors({ origin: 'https://scan.accessibility-act.it' }));
@@ -15,7 +15,7 @@ app.post('/scan', async (req, res) => {
 
   let chrome;
   try {
-    chrome = await chromeLauncher.launch({ chromeFlags: ['--headless'] });
+    chrome = await launch({ chromeFlags: ['--headless'] });
     const options = { logLevel: 'info', output: 'json', onlyCategories: ['accessibility'], port: chrome.port };
     const runnerResult = await lighthouse(url, options);
 
