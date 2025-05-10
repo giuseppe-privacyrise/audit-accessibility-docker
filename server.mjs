@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import lighthouse from 'lighthouse';
-import { launch } from 'chrome-launcher';
+import puppeteer from 'puppeteer';
 
 const app = express();
 app.use(cors({ origin: 'https://scan.accessibility-act.it' }));
@@ -13,15 +13,19 @@ app.post('/scan', async (req, res) => {
     return res.status(400).json({ error: 'Invalid URL' });
   }
 
-  let chrome;
+  let browser;
   try {
-    chrome = await launch({ chromeFlags: ['--headless'] });
-    const options = { logLevel: 'info', output: 'json', onlyCategories: ['accessibility'], port: chrome.port };
-    const runnerResult = await lighthouse(url, options);
+    browser = await puppeteer.launch({ args: ['--no-sandbox', '--headless', '--disable-gpu'] });
+    const port = new URL(browser.wsEndpoint()).port;
+    const result = await lighthouse(url, {
+      port,
+      onlyCategories: ['accessibility'],
+      output: 'json',
+    });
 
-    const reportJson = runnerResult.lhr;
-    const score = reportJson.categories.accessibility.score;
-    const issues = Object.values(reportJson.audits)
+    const report = result.lhr;
+    const score = report.categories.accessibility.score;
+    const issues = Object.values(report.audits)
       .filter(a => a.score !== 1)
       .map(a => ({ id: a.id, title: a.title, description: a.description }));
 
@@ -30,7 +34,7 @@ app.post('/scan', async (req, res) => {
     console.error('Lighthouse error:', err);
     res.status(500).json({ error: 'Scan failed' });
   } finally {
-    if (chrome) await chrome.kill();
+    if (browser) await browser.close();
   }
 });
 
