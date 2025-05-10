@@ -15,10 +15,17 @@ app.post('/scan', async (req, res) => {
     return res.status(400).json({ error: 'Invalid URL' });
   }
 
+  console.log(`📥 Received scan request for: ${url}`);
+
   try {
-    const { stdout } = await execAsync(
+    console.log('🚀 Launching Lighthouse scan...');
+    const { stdout, stderr } = await execAsync(
       `lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless --no-sandbox --disable-gpu --disable-dev-shm-usage"`
     );
+
+    console.log('✅ Lighthouse scan completed');
+    if (stderr) console.error('⚠️ stderr from Lighthouse:', stderr);
+
     const report = JSON.parse(stdout);
     const score = report.categories.accessibility.score;
     const issues = Object.values(report.audits)
@@ -27,7 +34,8 @@ app.post('/scan', async (req, res) => {
 
     res.json({ score, issues });
   } catch (err) {
-    console.error('Lighthouse full error:', err.message, err.stack);
+    console.error('🔥 Lighthouse scan failed:', err.message);
+    console.error(err.stack);
     res.status(500).json({ error: 'Scan failed' });
   }
 });
