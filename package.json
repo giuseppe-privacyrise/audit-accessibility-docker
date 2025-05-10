@@ -1,5 +1,5 @@
 {
-  "name": "audit-accessibility-puppeteer",
+  "name": "audit-accessibility-final",
   "version": "1.0.0",
   "type": "module",
   "main": "server.mjs",
@@ -13,6 +13,6 @@
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "lighthouse": "^11.6.0",
-    "puppeteer": "^21.3.8"
+    "puppeteer-core": "^21.3.8"
   }
 }
