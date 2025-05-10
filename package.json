@@ -9,8 +9,7 @@
   "dependencies": {
     "chrome-launcher": "^1.2.0",
     "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "puppeteer": "^24.8.2"
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "lighthouse": "^11.7.1"
