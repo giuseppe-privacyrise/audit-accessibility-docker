@@ -20,7 +20,7 @@ app.post('/scan', async (req, res) => {
   try {
     console.log('🚀 Launching Lighthouse scan via npx...');
     const { stdout, stderr } = await execAsync(
-      `npx lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless --no-sandbox --disable-gpu --disable-dev-shm-usage"`
+      `npx lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --locale=it --chrome-flags="--headless --no-sandbox --disable-gpu --disable-dev-shm-usage"`
     );
 
     console.log('✅ Lighthouse scan completed');
