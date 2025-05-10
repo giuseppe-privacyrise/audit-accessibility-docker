@@ -16,8 +16,9 @@ app.post('/scan', async (req, res) => {
 
   try {
     const { stdout } = await execAsync(
-      \`lighthouse \${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless"\`
-    );
+  `lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless"`
+);
+
     const report = JSON.parse(stdout);
 
     const score = report.categories.accessibility.score;
