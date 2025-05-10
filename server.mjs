@@ -1,11 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import { chromium } from 'playwright';
-import lighthouse from 'lighthouse';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 const app = express();
 app.use(cors({ origin: 'https://scan.accessibility-act.it' }));
 app.use(express.json());
+
+const execAsync = promisify(exec);
 
 app.post('/scan', async (req, res) => {
   const { url } = req.body;
@@ -13,21 +15,11 @@ app.post('/scan', async (req, res) => {
     return res.status(400).json({ error: 'Invalid URL' });
   }
 
-  let browser;
   try {
-    browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    const wsEndpoint = browser._initializer.wsEndpoint;
-    const port = new URL(wsEndpoint).port;
-
-    const result = await lighthouse(url, {
-      port,
-      onlyCategories: ['accessibility'],
-      output: 'json',
-    });
-
-    const report = result.lhr;
+    const { stdout } = await execAsync(
+      `lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless --no-sandbox"`
+    );
+    const report = JSON.parse(stdout);
     const score = report.categories.accessibility.score;
     const issues = Object.values(report.audits)
       .filter(a => a.score !== 1)
@@ -37,8 +29,6 @@ app.post('/scan', async (req, res) => {
   } catch (err) {
     console.error('Lighthouse error:', err);
     res.status(500).json({ error: 'Scan failed' });
-  } finally {
-    if (browser) await browser.close();
   }
 });
 

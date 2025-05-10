@@ -1,19 +1,14 @@
 {
-  "name": "audit-accessibility-playwright",
+  "name": "audit-accessibility-docker",
   "version": "1.0.0",
   "type": "module",
   "main": "server.mjs",
   "scripts": {
-    "start": "node server.mjs",
-    "postinstall": "npx playwright install chromium"
-  },
-  "engines": {
-    "node": "18.x"
+    "start": "node server.mjs"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "lighthouse": "^11.6.0",
-    "playwright": "^1.44.0"
+    "lighthouse": "^11.6.0"
   }
 }
