@@ -1,13 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import { chromium } from 'playwright';
 import lighthouse from 'lighthouse';
-import puppeteer from 'puppeteer-core';
 
 const app = express();
 app.use(cors({ origin: 'https://scan.accessibility-act.it' }));
 app.use(express.json());
-
-const CHROME_PATH = '/usr/bin/google-chrome';
 
 app.post('/scan', async (req, res) => {
   const { url } = req.body;
@@ -17,12 +15,12 @@ app.post('/scan', async (req, res) => {
 
   let browser;
   try {
-    browser = await puppeteer.launch({
-      executablePath: CHROME_PATH,
-      args: ['--no-sandbox', '--headless', '--disable-gpu']
-    });
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const wsEndpoint = browser._initializer.wsEndpoint;
+    const port = new URL(wsEndpoint).port;
 
-    const port = new URL(browser.wsEndpoint()).port;
     const result = await lighthouse(url, {
       port,
       onlyCategories: ['accessibility'],
