@@ -17,7 +17,7 @@ app.post('/scan', async (req, res) => {
 
   try {
     const { stdout } = await execAsync(
-      `lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless --no-sandbox"`
+      `lighthouse ${url} --only-categories=accessibility --output=json --output-path=stdout --quiet --chrome-flags="--headless --no-sandbox --disable-gpu --disable-dev-shm-usage"`
     );
     const report = JSON.parse(stdout);
     const score = report.categories.accessibility.score;
@@ -27,7 +27,7 @@ app.post('/scan', async (req, res) => {
 
     res.json({ score, issues });
   } catch (err) {
-    console.error('Lighthouse error:', err);
+    console.error('Lighthouse full error:', err.message, err.stack);
     res.status(500).json({ error: 'Scan failed' });
   }
 });
