@@ -30,7 +30,7 @@ app.post('/scan', async (req, res) => {
     const score = report.categories.accessibility.score;
     const issues = Object.values(report.audits)
       .filter(a => a.score !== 1)
-      .map(a => ({ id: a.id, title: a.title, description: a.description }));
+      .map(a => ({ id: a.id, title: a.title, description: a.description, score: a.score, scoreDisplayMode: a.scoreDisplayMode }));
 
     res.json({ score, issues });
   } catch (err) {
